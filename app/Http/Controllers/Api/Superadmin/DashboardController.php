@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Superadmin;
 
-
 use App\Models\Aparatur;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\AktivitasJamaah;
 use App\Models\Event;
 use App\Models\Takmir;
 use App\Models\Jamaah;
@@ -16,15 +16,12 @@ use App\Models\Khatib;
 use App\Models\Asatidz;
 use App\Models\Modul;
 use App\Models\User;
+use App\Models\ProfileMasjid;
 
 class DashboardController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(Request $request)
     {
-        //count categories
         $categories = Category::count();
         $takmirs = Takmir::count();
         $events = Event::count();
@@ -36,23 +33,26 @@ class DashboardController extends Controller
         $asatidzs = Asatidz::count();
         $moduls = Modul::count();
         $users = User::count();
+        $profile_masjids = ProfileMasjid::count();
+        $aktivitas_jamaahs = AktivitasJamaah::count();
 
-        //return response json
         return response()->json([
             'success'   => true,
             'message'   => 'List Data on Dashboard',
             'data'      => [
-                'categories' => $categories,
-                'takmirs'    => $takmirs,
-                'events'     => $events,
-                'aparaturs'  => $aparaturs,
-                'jamaahs'    => $jamaahs,
-                'imams'      => $imams,
-                'muadzins'   => $muadzins,
-                'khatibs'    => $khatibs,
-                'asatidzs'   => $asatidzs,
-                'moduls'     => $moduls,
-                'users'      => $users,
+                'categories'        => $categories,
+                'takmirs'           => $takmirs,
+                'events'            => $events,
+                'aparaturs'         => $aparaturs,
+                'jamaahs'           => $jamaahs,
+                'imams'             => $imams,
+                'muadzins'          => $muadzins,
+                'khatibs'           => $khatibs,
+                'asatidzs'          => $asatidzs,
+                'moduls'            => $moduls,
+                'users'             => $users,
+                'aktivitas_jamaahs' => $aktivitas_jamaahs,
+                'profile_masjids'   => $profile_masjids,
             ]
         ]);
     }

@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Traits\HasMasjid; // Import trait
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Tambahkan ini
 
 
 class Takmir extends Model
 {
+    use HasMasjid;
     protected $fillable = [
         'user_id',
         'nama',
@@ -31,5 +34,9 @@ class Takmir extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    public function profileMasjid()
+    {
+        return $this->belongsTo(ProfileMasjid::class);
     }
 }

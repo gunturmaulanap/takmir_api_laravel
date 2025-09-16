@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Traits\HasMasjid; // Import trait
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Tambahkan ini
+
+
 
 
 class Asatidz extends Model
 {
+    use HasMasjid;
+
     protected $fillable = [
         'nama',
         'user_id',

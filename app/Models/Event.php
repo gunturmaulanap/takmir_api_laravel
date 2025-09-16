@@ -4,10 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Models\Traits\HasMasjid; // Import trait
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Tambahkan ini
+
+
 
 
 class Event extends Model
 {
+    use HasMasjid;
     protected $fillable = [
         'category_id',
         'profile_masjid_id',

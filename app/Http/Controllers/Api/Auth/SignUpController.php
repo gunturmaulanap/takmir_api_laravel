@@ -46,10 +46,10 @@ class SignUpController extends Controller
         DB::beginTransaction();
 
         try {
-            // Check if the 'superadmin' role exists
-            $superadminRole = Role::where('name', 'superadmin')->first();
-            if (!$superadminRole) {
-                throw new \Exception('Role "superadmin" tidak ditemukan. Silakan buat role ini terlebih dahulu.');
+            // Check if the 'admin' role exists
+            $adminRole = Role::where('name', 'admin')->first();
+            if (!$adminRole) {
+                throw new \Exception('Role "admin" tidak ditemukan. Silakan buat role ini terlebih dahulu.');
             }
 
             // Upload image jika ada
@@ -67,8 +67,8 @@ class SignUpController extends Controller
                 'password'  => Hash::make($request->password),
             ]);
 
-            // Assign the 'superadmin' role to the new user
-            $user->assignRole($superadminRole);
+            // Assign the 'admin' role to the new user
+            $user->assignRole($adminRole);
 
             // Create the ProfileMasjid entry linked to the new user
             ProfileMasjid::create([
@@ -86,7 +86,7 @@ class SignUpController extends Controller
             // Return a success response with user data and token
             return response()->json([
                 'success'       => true,
-                'message'       => 'Registrasi superadmin dan profil masjid berhasil!',
+                'message'       => 'Registrasi admin dan profil masjid berhasil!',
                 'user'          => $user->only(['name', 'email']),
                 'profile'       => ProfileMasjid::where('user_id', $user->id)->first(), // Ambil data profil untuk respons
                 'permissions'   => $user->getPermissionArray(),

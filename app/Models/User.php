@@ -2,45 +2,30 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
-use Tymon\JWTAuth\Contracts\JWTSubject; // <-- import JWTSubject
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Authenticatable implements JWTSubject // <-- tambahkan ini
+class User extends Authenticatable implements JWTSubject
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, Notifiable, HasFactory, HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -49,11 +34,6 @@ class User extends Authenticatable implements JWTSubject // <-- tambahkan ini
         ];
     }
 
-    /**
-     * getPermissionArray
-     *
-     * @return void
-     */
     public function getPermissionArray()
     {
         return $this->getAllPermissions()->mapWithKeys(function ($pr) {
@@ -61,60 +41,57 @@ class User extends Authenticatable implements JWTSubject // <-- tambahkan ini
         });
     }
 
-    /**
-     * getJWTIdentifier
-     *
-     * @return void
-     */
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
-    /**
-     * getJWTCustomClaims
-     *
-     * @return void
-     */
     public function getJWTCustomClaims()
     {
         return [];
     }
 
-    public function imams()
+    public function profileMasjid(): HasOne
+    {
+        return $this->hasOne(ProfileMasjid::class);
+    }
+
+    // Menambahkan type hinting untuk konsistensi
+    public function imams(): HasMany
     {
         return $this->hasMany(Imam::class);
     }
-    public function asatidzs()
+    public function asatidzs(): HasMany
     {
         return $this->hasMany(Asatidz::class);
     }
-    public function khatibs()
+    public function khatibs(): HasMany
     {
         return $this->hasMany(Khatib::class);
     }
-    public function takmirs()
+    public function takmirs(): HasMany
     {
         return $this->hasMany(Takmir::class);
     }
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class);
     }
-    public function eventViews()
+    public function eventViews(): HasMany
     {
         return $this->hasMany(EventView::class);
     }
-    public function moduls()
+    public function moduls(): HasMany
     {
         return $this->hasMany(Modul::class);
     }
-    public function jamaahs()
+    public function jamaahs(): HasMany
     {
         return $this->hasMany(Jamaah::class);
     }
-    public function profileMasjids()
+
+    public function categories(): HasMany
     {
-        return $this->hasOne(ProfileMasjid::class);
+        return $this->hasMany(Category::class);
     }
 }
