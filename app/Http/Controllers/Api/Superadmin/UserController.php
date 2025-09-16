@@ -9,6 +9,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Spatie\Permission\Models\Role; // Tambahkan ini
 
 class UserController extends Controller implements HasMiddleware
 {
@@ -55,13 +56,28 @@ class UserController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'     => 'required',
-            'email'    => 'required|unique:users',
-            'password' => 'required|confirmed'
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email',
+            'password'  => 'required|string|min:8|confirmed',
+            'roles'     => 'required|array',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal!',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        // Validasi tambahan: Pastikan semua roles ada di database
+        $roles = Role::whereIn('name', $request->roles)->pluck('name')->toArray();
+        if (count($roles) !== count($request->roles)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Beberapa role yang dimasukkan tidak ditemukan.',
+                'errors'  => ['roles' => ['Satu atau lebih role yang Anda berikan tidak valid.']]
+            ], 422);
         }
 
         //create user
@@ -72,7 +88,7 @@ class UserController extends Controller implements HasMiddleware
         ]);
 
         //assign roles to user
-        $user->assignRole($request->roles);
+        $user->assignRole($roles);
 
         if ($user) {
             //return success with Api Resource
@@ -99,7 +115,7 @@ class UserController extends Controller implements HasMiddleware
         }
 
         //return failed with Api Resource
-        return new UserResource(false, 'Detail Data User Tidak DItemukan!', null);
+        return new UserResource(false, 'Detail Data User Tidak Ditemukan!', null);
     }
 
     /**
@@ -112,24 +128,37 @@ class UserController extends Controller implements HasMiddleware
     public function update(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
-            'name'     => 'required',
-            'email'    => 'required|unique:users,email,' . $user->id,
-            'password' => 'confirmed'
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email,' . $user->id,
+            'password'  => 'nullable|string|min:8|confirmed',
+            'roles'     => 'required|array',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal!',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        // Validasi tambahan: Pastikan semua roles ada di database
+        $roles = Role::whereIn('name', $request->roles)->pluck('name')->toArray();
+        if (count($roles) !== count($request->roles)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Beberapa role yang dimasukkan tidak ditemukan.',
+                'errors'  => ['roles' => ['Satu atau lebih role yang Anda berikan tidak valid.']]
+            ], 422);
         }
 
         if ($request->password == "") {
-
             //update user without password
             $user->update([
                 'name'      => $request->name,
                 'email'     => $request->email,
             ]);
         } else {
-
             //update user with new password
             $user->update([
                 'name'      => $request->name,
@@ -139,7 +168,7 @@ class UserController extends Controller implements HasMiddleware
         }
 
         //assign roles to user
-        $user->syncRoles($request->roles);
+        $user->syncRoles($roles);
 
         if ($user) {
             //return success with Api Resource
@@ -165,5 +194,29 @@ class UserController extends Controller implements HasMiddleware
 
         //return failed with Api Resource
         return new UserResource(false, 'Data User Gagal Dihapus!', null);
+    }
+
+    /**
+     * Toggle the active status of a user.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function toggleActive($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return new UserResource(false, 'User tidak ditemukan.', null);
+        }
+
+        // Toggle the is_active status
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        // Check if the user is active or not
+        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+
+        return new UserResource(true, "User berhasil {$status}!", $user);
     }
 }

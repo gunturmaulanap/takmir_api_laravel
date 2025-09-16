@@ -9,6 +9,7 @@ use App\Http\Resources\RoleResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Spatie\Permission\Models\Permission; // Tambahkan ini
 
 class RoleController extends Controller implements HasMiddleware
 {
@@ -58,19 +59,34 @@ class RoleController extends Controller implements HasMiddleware
          * Validate request
          */
         $validator = Validator::make($request->all(), [
-            'name'          => 'required',
-            'permissions'   => 'required',
+            'name'          => 'required|unique:roles,name',
+            'permissions'   => 'required|array',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal!',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        // Validasi tambahan: Pastikan semua permissions ada di database
+        $permissions = Permission::whereIn('name', $request->permissions)->pluck('name')->toArray();
+
+        if (count($permissions) !== count($request->permissions)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Beberapa izin yang dimasukkan tidak ditemukan.',
+                'errors'  => ['permissions' => ['Satu atau lebih izin yang Anda berikan tidak valid.']]
+            ], 422);
         }
 
         //create role
         $role = Role::create(['name' => $request->name]);
 
         //assign permissions to role
-        $role->givePermissionTo($request->permissions);
+        $role->givePermissionTo($permissions);
 
         if ($role) {
             //return success with Api Resource
@@ -114,19 +130,34 @@ class RoleController extends Controller implements HasMiddleware
          * validate request
          */
         $validator = Validator::make($request->all(), [
-            'name'          => 'required',
-            'permissions'   => 'required',
+            'name'          => 'required|unique:roles,name,' . $role->id,
+            'permissions'   => 'required|array',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal!',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        // Validasi tambahan: Pastikan semua permissions ada di database
+        $permissions = Permission::whereIn('name', $request->permissions)->pluck('name')->toArray();
+
+        if (count($permissions) !== count($request->permissions)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Beberapa izin yang dimasukkan tidak ditemukan.',
+                'errors'  => ['permissions' => ['Satu atau lebih izin yang Anda berikan tidak valid.']]
+            ], 422);
         }
 
         //update role
         $role->update(['name' => $request->name]);
 
         //sync permissions
-        $role->syncPermissions($request->permissions);
+        $role->syncPermissions($permissions);
 
         if ($role) {
             //return success with Api Resource

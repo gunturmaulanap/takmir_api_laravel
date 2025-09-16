@@ -38,5 +38,10 @@ Route::prefix('superadmin')->group(function () {
 
         //users
         Route::apiResource('/users', App\Http\Controllers\Api\Superadmin\UserController::class);
+
+        //toggle active user
+        Route::put('/users/{id}/toggle-active', [\App\Http\Controllers\Api\Superadmin\UserController::class, 'toggleActive'])->middleware(['auth:api', 'permission:users.edit']);
+
+        
     });
 });
