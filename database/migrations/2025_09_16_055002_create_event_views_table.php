@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->foreignId('profile_masjid_id')->constrained('profile_masjids')->cascadeOnDelete();
+
             $table->foreignId('category_id')->references('id')->on('categories')->cascadeOnDelete();
             $table->date('tanggal_event');
-            $table->string('aktivitas_jamaah');
             $table->timestamps();
         });
     }

@@ -10,6 +10,7 @@ class Event extends Model
 {
     protected $fillable = [
         'category_id',
+        'profile_masjid_id',
         'user_id',
         'nama',
         'slug',
@@ -32,5 +33,9 @@ class Event extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function profileMasjid()
+    {
+        return $this->belongsTo(ProfileMasjid::class);
     }
 }

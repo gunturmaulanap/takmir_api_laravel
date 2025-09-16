@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->references('id')->on('categories')->cascadeOnDelete();
             $table->foreignId('profile_masjid_id')->constrained('profile_masjids')->cascadeOnDelete();
+
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->string('nama');
             $table->string('slug');

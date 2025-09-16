@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('category_id')->references('id')->on('categories')->cascadeOnDelete();
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('profile_masjid_id')->constrained('profile_masjids')->cascadeOnDelete();
+
             $table->string('slug')->unique();
             $table->string('kode')->unique();
             $table->string('image')->nullable();

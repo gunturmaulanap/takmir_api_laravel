@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('profile_masjids', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('profile_masjid_id')->constrained('profile_masjids')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('nama');
             $table->text('alamat');
-            $table->string('username')->unique();
             $table->string('image')->nullable();
             $table->timestamps();
         });

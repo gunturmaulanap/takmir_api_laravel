@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 
 
+// Route untuk sign up (register)
+Route::post('/signup', [App\Http\Controllers\Api\Auth\SignUpController::class, '__invoke']);
+
 //route login
 Route::post('/login', [App\Http\Controllers\Api\Auth\LoginController::class, 'index']);
 
@@ -41,7 +44,5 @@ Route::prefix('superadmin')->group(function () {
 
         //toggle active user
         Route::put('/users/{id}/toggle-active', [\App\Http\Controllers\Api\Superadmin\UserController::class, 'toggleActive'])->middleware(['auth:api', 'permission:users.edit']);
-
-        
     });
 });

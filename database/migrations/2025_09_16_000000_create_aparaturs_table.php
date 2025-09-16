@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('aparaturs', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('nama');
             $table->string('role');
             $table->string('image')->nullable();
+            $table->foreignId('profile_masjid_id')->constrained('profile_masjids')->cascadeOnDelete();
             $table->timestamps();
         });
     }

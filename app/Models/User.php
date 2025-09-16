@@ -115,6 +115,6 @@ class User extends Authenticatable implements JWTSubject // <-- tambahkan ini
     }
     public function profileMasjids()
     {
-        return $this->belongsToMany(ProfileMasjid::class);
+        return $this->hasOne(ProfileMasjid::class);
     }
 }

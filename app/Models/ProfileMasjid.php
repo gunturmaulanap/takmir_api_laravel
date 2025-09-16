@@ -12,7 +12,6 @@ class ProfileMasjid extends Model
         'user_id',
         'nama',
         'alamat',
-        'username',
         'image',
     ];
     protected function image(): Attribute
@@ -24,6 +23,6 @@ class ProfileMasjid extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsTo(User::class);
     }
 }
