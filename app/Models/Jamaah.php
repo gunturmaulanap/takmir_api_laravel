@@ -13,13 +13,14 @@ class Jamaah extends Model
     protected $fillable = [
         'user_id',
         'profile_masjid_id',
-        'kode',
         'nama',
         'no_handphone',
+        'category_id',
         'alamat',
         'umur',
+        'slug',
         'jenis_kelamin',
-        'aktivitas_jamaah',
+        'aktivitas_jamaah_id',
     ];
     public function user()
     {
@@ -28,5 +29,13 @@ class Jamaah extends Model
     public function profileMasjid()
     {
         return $this->belongsTo(ProfileMasjid::class);
+    }
+    public function aktivitasJamaah()
+    {
+        return $this->belongsTo(AktivitasJamaah::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

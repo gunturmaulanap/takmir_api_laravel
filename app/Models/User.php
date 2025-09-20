@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Models;
 
 use Spatie\Permission\Traits\HasRoles;
@@ -10,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -51,40 +53,69 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    // relasi untuk role 'admin'
     public function profileMasjid(): HasOne
     {
         return $this->hasOne(ProfileMasjid::class);
     }
 
-    // Menambahkan type hinting untuk konsistensi
+    // relasi untuk role 'takmir'
+    public function takmir(): HasOne
+    {
+        return $this->hasOne(Takmir::class);
+    }
+
+    // relasi 'hasOneThrough' untuk mengakses profile masjid dari user takmir
+    public function takmirProfileMasjid(): HasOneThrough
+    {
+        return $this->hasOneThrough(ProfileMasjid::class, Takmir::class, 'user_id', 'id', 'id', 'profile_masjid_id');
+    }
+
+    /**
+     * Dapatkan profil masjid yang terkait dengan user, terlepas dari rolenya.
+     *
+     * @return \App\Models\ProfileMasjid|null
+     */
+    public function getMasjidProfile()
+    {
+        if ($this->hasRole('admin')) {
+            return $this->profileMasjid;
+        }
+
+        if ($this->hasRole('takmir')) {
+            return $this->takmirProfileMasjid;
+        }
+
+        return null;
+    }
+
     public function imams(): HasMany
     {
         return $this->hasMany(Imam::class);
     }
+
     public function asatidzs(): HasMany
     {
         return $this->hasMany(Asatidz::class);
     }
+
     public function khatibs(): HasMany
     {
         return $this->hasMany(Khatib::class);
     }
-    public function takmirs(): HasMany
-    {
-        return $this->hasMany(Takmir::class);
-    }
+
     public function events(): HasMany
     {
         return $this->hasMany(Event::class);
     }
+
     public function eventViews(): HasMany
     {
         return $this->hasMany(EventView::class);
     }
-    public function moduls(): HasMany
-    {
-        return $this->hasMany(Modul::class);
-    }
+
+
+
     public function jamaahs(): HasMany
     {
         return $this->hasMany(Jamaah::class);

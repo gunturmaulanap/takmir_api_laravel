@@ -11,21 +11,38 @@ class UserTableSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create user
-        $user = User::create([
-            'name'      => 'Super Admin',
-            'email'     => 'superadmin@gmail.com',
-            'password'  => bcrypt('password'),
-        ]);
+        // Create Super Admin User
+        $superAdminUser = User::firstOrCreate(
+            ['email' => 'superadmin@gmail.com'],
+            ['name' => 'Super Admin', 'password' => bcrypt('password')]
+        );
 
-        // Ambil role superadmin untuk guard 'api'
-        $role = Role::where('name', 'superadmin')->where('guard_name', 'api')->first();
+        $superAdminRole = Role::where('name', 'superadmin')->where('guard_name', 'api')->first();
+        if ($superAdminRole) {
+            $allPermissions = Permission::where('guard_name', 'api')->get();
+            $superAdminRole->syncPermissions($allPermissions);
+            $superAdminUser->assignRole($superAdminRole);
+        }
 
-        // Assign semua permission ke role ini
-        $permissions = Permission::where('guard_name', 'api')->get();
-        $role->syncPermissions($permissions);
+        // Create Admin Users (from user_id 2 to 7)
+        $adminRole = Role::where('name', 'admin')->where('guard_name', 'api')->first();
+        $adminUsers = [
+            'suyitno', // for Masjid Nurul Ashri
+            'dwi-aryo', // for Masjid Kampus UGM
+            'putri-dian', // for Masjid Gedhe Kauman
+            'anisa-ratna', // for Masjid Jogokariyan
+            'joko-susilo', // for Masjid Syuhada
+            'wahyu-aji', // for Masjid Al-Falah
+        ];
 
-        // Assign role ke user
-        $user->assignRole($role);
+        foreach ($adminUsers as $index => $username) {
+            $user = User::firstOrCreate(
+                ['email' => $username . '@gmail.com'],
+                ['name' => ucwords(str_replace('-', ' ', $username)), 'password' => bcrypt('password')]
+            );
+            if ($adminRole) {
+                $user->assignRole($adminRole);
+            }
+        }
     }
 }

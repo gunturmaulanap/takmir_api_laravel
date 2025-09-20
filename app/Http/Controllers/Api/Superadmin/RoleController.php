@@ -9,7 +9,9 @@ use App\Http\Resources\RoleResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
-use Spatie\Permission\Models\Permission; // Tambahkan ini
+use Spatie\Permission\Models\Permission;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Validation\Rule;
 
 class RoleController extends Controller implements HasMiddleware
 {
@@ -31,19 +33,16 @@ class RoleController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResource
      */
-    public function index()
+    public function index(): JsonResource
     {
-        //get roles
         $roles = Role::when(request()->search, function ($roles) {
             $roles = $roles->where('name', 'like', '%' . request()->search . '%');
         })->with('permissions')->latest()->paginate(5);
-
-        //append query string to pagination links
+        
         $roles->appends(['search' => request()->search]);
 
-        //return with Api Resource
         return new RoleResource(true, 'List Data Roles', $roles);
     }
 
@@ -51,49 +50,31 @@ class RoleController extends Controller implements HasMiddleware
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return JsonResource
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResource
     {
-        /**
-         * Validate request
-         */
         $validator = Validator::make($request->all(), [
             'name'          => 'required|unique:roles,name',
             'permissions'   => 'required|array',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi Gagal!',
-                'errors'  => $validator->errors()
-            ], 422);
+            return new RoleResource(false, 'Validasi Gagal!', $validator->errors());
         }
 
-        // Validasi tambahan: Pastikan semua permissions ada di database
         $permissions = Permission::whereIn('name', $request->permissions)->pluck('name')->toArray();
-
         if (count($permissions) !== count($request->permissions)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Beberapa izin yang dimasukkan tidak ditemukan.',
-                'errors'  => ['permissions' => ['Satu atau lebih izin yang Anda berikan tidak valid.']]
-            ], 422);
+            return new RoleResource(false, 'Beberapa izin yang dimasukkan tidak ditemukan.', ['permissions' => ['Satu atau lebih izin yang Anda berikan tidak valid.']]);
         }
 
-        //create role
         $role = Role::create(['name' => $request->name]);
-
-        //assign permissions to role
         $role->givePermissionTo($permissions);
 
         if ($role) {
-            //return success with Api Resource
             return new RoleResource(true, 'Data Role Berhasil Disimpan!', $role);
         }
 
-        //return failed with Api Resource
         return new RoleResource(false, 'Data Role Gagal Disimpan!', null);
     }
 
@@ -101,70 +82,49 @@ class RoleController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResource
      */
-    public function show($id)
+    public function show($id): JsonResource
     {
-        //get role
-        $role = Role::with('permissions')->findOrFail($id);
-
-        if ($role) {
-            //return success with Api Resource
+        try {
+            $role = Role::with('permissions')->findOrFail($id);
             return new RoleResource(true, 'Detail Data Role!', $role);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return new RoleResource(false, 'Detail Data Role Tidak Ditemukan!', null);
         }
-
-        //return failed with Api Resource
-        return new RoleResource(false, 'Detail Data Role Tidak Ditemukan!', null);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  \Spatie\Permission\Models\Role  $role
+     * @return JsonResource
      */
-    public function update(Request $request, Role $role)
+    public function update(Request $request, Role $role): JsonResource
     {
-        /**
-         * validate request
-         */
         $validator = Validator::make($request->all(), [
-            'name'          => 'required|unique:roles,name,' . $role->id,
+            // Perbaikan ada di baris ini:
+                'name'          => ['required', 'string', Rule::unique('roles')->ignore($role->id)],
             'permissions'   => 'required|array',
         ]);
-
+    
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi Gagal!',
-                'errors'  => $validator->errors()
-            ], 422);
+            return new RoleResource(false, 'Validasi Gagal!', $validator->errors());
         }
-
-        // Validasi tambahan: Pastikan semua permissions ada di database
+    
         $permissions = Permission::whereIn('name', $request->permissions)->pluck('name')->toArray();
-
         if (count($permissions) !== count($request->permissions)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Beberapa izin yang dimasukkan tidak ditemukan.',
-                'errors'  => ['permissions' => ['Satu atau lebih izin yang Anda berikan tidak valid.']]
-            ], 422);
+            return new RoleResource(false, 'Beberapa izin yang dimasukkan tidak ditemukan.', ['permissions' => ['Satu atau lebih izin yang Anda berikan tidak valid.']]);
         }
-
-        //update role
+    
         $role->update(['name' => $request->name]);
-
-        //sync permissions
         $role->syncPermissions($permissions);
-
+    
         if ($role) {
-            //return success with Api Resource
             return new RoleResource(true, 'Data Role Berhasil Diupdate!', $role);
         }
-
-        //return failed with Api Resource
+    
         return new RoleResource(false, 'Data Role Gagal Diupdate!', null);
     }
 
@@ -172,34 +132,29 @@ class RoleController extends Controller implements HasMiddleware
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResource
      */
-    public function destroy($id)
+    public function destroy($id): JsonResource
     {
-        //find role by ID
-        $role = Role::findOrFail($id);
-
-        //delete role
-        if ($role->delete()) {
-            //return success with Api Resource
-            return new RoleResource(true, 'Data Role Berhasil Dihapus!', null);
+        try {
+            $role = Role::findOrFail($id);
+            if ($role->delete()) {
+                return new RoleResource(true, 'Data Role Berhasil Dihapus!', null);
+            }
+            return new RoleResource(false, 'Data Role Gagal Dihapus!', null);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return new RoleResource(false, 'Data Role Tidak Ditemukan!', null);
         }
-
-        //return failed with Api Resource
-        return new RoleResource(false, 'Data Role Gagal Dihapus!', null);
     }
 
     /**
      * all
      *
-     * @return void
+     * @return JsonResource
      */
-    public function all()
+    public function all(): JsonResource
     {
-        //get roles
         $roles = Role::latest()->get();
-
-        //return with Api Resource
         return new RoleResource(true, 'List Data Roles', $roles);
     }
 }

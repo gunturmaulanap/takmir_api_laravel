@@ -16,6 +16,7 @@ class EventView extends Model
         'profile_masjid_id',
         'user_id',
         'event_id',
+        'khatib_id',
         'tanggal_event',
         'aktivitas_jamaah',
     ];

@@ -16,8 +16,10 @@ class Asatidz extends Model
 
     protected $fillable = [
         'nama',
+        'profile_masjid_id',
         'user_id',
         'no_handphone',
+        'category_id',
         'alamat',
         'tugas',
         'jenis_kelamin',
@@ -32,5 +34,13 @@ class Asatidz extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function profileMasjid()
+    {
+        return $this->belongsTo(ProfileMasjid::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

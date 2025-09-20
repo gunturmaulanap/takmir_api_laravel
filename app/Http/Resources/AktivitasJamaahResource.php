@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources; // Ganti namespace yang salah
+namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EventResource extends JsonResource
+class AktivitasJamaahResource extends JsonResource
 {
     /**
      * @var bool
@@ -15,6 +15,7 @@ class EventResource extends JsonResource
      * @var string
      */
     public $message;
+
     /**
      * __construct
      *
@@ -29,6 +30,7 @@ class EventResource extends JsonResource
         $this->status  = $status;
         $this->message = $message;
     }
+
     /**
      * Transform the resource into an array.
      *

@@ -14,6 +14,7 @@ class Imam extends Model
     protected $fillable = [
         'user_id',
         'profile_masjid_id',
+        'category_id',
         'nama',
         'no_handphone',
         'alamat',
@@ -26,5 +27,9 @@ class Imam extends Model
     public function profileMasjid()
     {
         return $this->belongsTo(ProfileMasjid::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

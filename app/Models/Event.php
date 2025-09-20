@@ -4,11 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use App\Models\Traits\HasMasjid; // Import trait
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Tambahkan ini
-
-
-
+use App\Models\Traits\HasMasjid;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Event extends Model
 {

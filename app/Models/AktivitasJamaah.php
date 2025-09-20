@@ -16,7 +16,6 @@ class AktivitasJamaah extends Model
         'user_id',
         'profile_masjid_id',
         'nama',
-        'detail_aktivitas',
     ];
     public function user()
     {
@@ -25,5 +24,9 @@ class AktivitasJamaah extends Model
     public function profileMasjid()
     {
         return $this->belongsTo(ProfileMasjid::class);
+    }
+    public function jamaah()
+    {
+        return $this->hasMany(Jamaah::class);
     }
 }

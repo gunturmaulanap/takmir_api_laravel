@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('jamaahs', function (Blueprint $table) {
             $table->id();
-            $table->string('kode')->unique();
+            $table->foreignId('aktivitas_jamaah_id')->constrained('aktivitas_jamaahs')->cascadeOnDelete();
             $table->foreignId('profile_masjid_id')->constrained('profile_masjids')->cascadeOnDelete();
             $table->foreignId('category_id')->references('id')->on('categories')->cascadeOnDelete();
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->text('alamat');
             $table->integer('umur');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
-            $table->string('aktivitas_jamaah');
             $table->timestamps();
         });
     }

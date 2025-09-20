@@ -14,7 +14,7 @@ use App\Models\Imam;
 use App\Models\Muadzin;
 use App\Models\Khatib;
 use App\Models\Asatidz;
-use App\Models\Modul;
+use App\Models\EventView;
 use App\Models\User;
 use App\Models\ProfileMasjid;
 
@@ -31,10 +31,10 @@ class DashboardController extends Controller
         $muadzins = Muadzin::count();
         $khatibs = Khatib::count();
         $asatidzs = Asatidz::count();
-        $moduls = Modul::count();
         $users = User::count();
         $profile_masjids = ProfileMasjid::count();
         $aktivitas_jamaahs = AktivitasJamaah::count();
+        $event_views = EventView::count();
 
         return response()->json([
             'success'   => true,
@@ -49,10 +49,10 @@ class DashboardController extends Controller
                 'muadzins'          => $muadzins,
                 'khatibs'           => $khatibs,
                 'asatidzs'          => $asatidzs,
-                'moduls'            => $moduls,
                 'users'             => $users,
                 'aktivitas_jamaahs' => $aktivitas_jamaahs,
                 'profile_masjids'   => $profile_masjids,
+                'event_views'        => $event_views
             ]
         ]);
     }

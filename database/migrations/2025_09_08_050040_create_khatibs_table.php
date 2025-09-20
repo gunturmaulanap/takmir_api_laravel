@@ -17,10 +17,12 @@ return new class extends Migration
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('profile_masjid_id')->constrained('profile_masjids')->cascadeOnDelete();
 
+            // Kolom baru sesuai permintaan Anda
+            $table->date('tanggal_khutbah');
+            $table->string('judul_khutbah');
             $table->string('nama');
             $table->string('no_handphone');
             $table->text('alamat');
-            $table->string('tugas');
             $table->timestamps();
         });
     }

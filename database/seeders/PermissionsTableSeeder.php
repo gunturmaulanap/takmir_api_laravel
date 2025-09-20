@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Faker\Provider\ar_EG\Person;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -43,91 +44,91 @@ class PermissionsTableSeeder extends Seeder
 
         //permission for takmir
         Permission::create([
-            'name' => 'takmir.index',
+            'name' => 'takmirs.index',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'takmir.create',
+            'name' => 'takmirs.create',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'takmir.edit',
+            'name' => 'takmirs.edit',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'takmir.delete',
+            'name' => 'takmirs.delete',
             'guard_name' => 'api'
         ]);
 
-        //permission for muadzin
+        //permission for muadzins
         Permission::create([
-            'name' => 'muadzin.index',
+            'name' => 'muadzins.index',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'muadzin.create',
+            'name' => 'muadzins.create',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'muadzin.edit',
+            'name' => 'muadzins.edit',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'muadzin.delete',
+            'name' => 'muadzins.delete',
             'guard_name' => 'api'
         ]);
         //permission for imam
         Permission::create([
-            'name' => 'imam.index',
+            'name' => 'imams.index',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'imam.create',
+            'name' => 'imams.create',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'imam.edit',
+            'name' => 'imams.edit',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'imam.delete',
+            'name' => 'imams.delete',
             'guard_name' => 'api'
         ]);
 
         //permission for profil masjid
         Permission::create([
-            'name' => 'profilemasjid.index',
+            'name' => 'profilemasjids.index',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'profilemasjid.edit',
+            'name' => 'profilemasjids.edit',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'profilemasjid.delete',
+            'name' => 'profilemasjids.delete',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'profilemasjid.create',
+            'name' => 'profilemasjids.create',
             'guard_name' => 'api'
         ]);
 
 
-        //permission for khatib
+        //permission for khatibs
         Permission::create([
-            'name' => 'khatib.index',
+            'name' => 'khatibs.index',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'khatib.create',
+            'name' => 'khatibs.create',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'khatib.edit',
+            'name' => 'khatibs.edit',
             'guard_name' => 'api'
         ]);
         Permission::create([
-            'name' => 'khatib.delete',
+            'name' => 'khatibs.delete',
             'guard_name' => 'api'
         ]);
 
@@ -167,6 +168,24 @@ class PermissionsTableSeeder extends Seeder
             'guard_name' => 'api'
         ]);
 
+        //permission for eventView
+        Permission::create([
+            'name' => 'event_views.index',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'event_views.create',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'event_views.edit',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'event_views.delete',
+            'guard_name' => 'api'
+        ]);
+
         //permission for moduls
         Permission::create([
             'name' => 'moduls.index',
@@ -201,6 +220,24 @@ class PermissionsTableSeeder extends Seeder
 
         Permission::create([
             'name' => 'jamaahs.delete',
+            'guard_name' => 'api'
+        ]);
+
+        //permission for aktivitas jamaah
+        Permission::create([
+            'name' => 'aktivitas_jamaahs.index',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'aktivitas_jamaahs.create',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'aktivitas_jamaahs.edit',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'aktivitas_jamaahs.delete',
             'guard_name' => 'api'
         ]);
 
