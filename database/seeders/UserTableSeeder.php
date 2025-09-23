@@ -14,7 +14,11 @@ class UserTableSeeder extends Seeder
         // Create Super Admin User
         $superAdminUser = User::firstOrCreate(
             ['email' => 'superadmin@gmail.com'],
-            ['name' => 'Super Admin', 'password' => bcrypt('password')]
+            [
+                'name' => 'Super Admin',
+                'username' => 'superadmin',
+                'password' => bcrypt('password'),
+            ]
         );
 
         $superAdminRole = Role::where('name', 'superadmin')->where('guard_name', 'api')->first();
@@ -28,17 +32,22 @@ class UserTableSeeder extends Seeder
         $adminRole = Role::where('name', 'admin')->where('guard_name', 'api')->first();
         $adminUsers = [
             'suyitno', // for Masjid Nurul Ashri
-            'dwi-aryo', // for Masjid Kampus UGM
-            'putri-dian', // for Masjid Gedhe Kauman
-            'anisa-ratna', // for Masjid Jogokariyan
-            'joko-susilo', // for Masjid Syuhada
-            'wahyu-aji', // for Masjid Al-Falah
+            'dwiaryo', // for Masjid Kampus UGM
+            'dimas', // for Masjid Gedhe Kauman
+            'ponco', // for Masjid Jogokariyan
+            'joko', // for Masjid Syuhada
+            'prabu', // for Masjid Al-Falah
+
         ];
 
         foreach ($adminUsers as $index => $username) {
             $user = User::firstOrCreate(
                 ['email' => $username . '@gmail.com'],
-                ['name' => ucwords(str_replace('-', ' ', $username)), 'password' => bcrypt('password')]
+                [
+                    'name' => ucwords(str_replace('-', ' ', $username)),
+                    'username' => $username,
+                    'password' => bcrypt('password'),
+                ]
             );
             if ($adminRole) {
                 $user->assignRole($adminRole);

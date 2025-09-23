@@ -15,11 +15,18 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionsTableSeeder::class);
         $this->call(RolesTableSeeder::class);
         $this->call(UserTableSeeder::class);
-        $this->call(CategoryTableSeeder::class);
 
         // Pastikan ProfileMasjidTableSeeder dijalankan sebelum AktivitasJamaahTableSeeder
         $this->call(ProfileMasjidTableSeeder::class);
-        $this->call(AktivitasJamaahTableSeeder::class);
+        $this->call(TakmirTableSeeder::class);
+        $this->call(CategoryTableSeeder::class);
+        $this->call(ImamTableSeeder::class);
+        $this->call(KhatibTableSeeder::class);
+        $this->call(MuadzinTableSeeder::class);
         $this->call(JamaahTableSeeder::class);
+        $this->call(JadwalKhutbahTableSeeder::class);
+        $this->call(EventTableSeeder::class);
+        $this->call(TransaksiKeuanganTableSeeder::class);
+        $this->call(EventViewTableSeeder::class);
     }
 }

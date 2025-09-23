@@ -18,7 +18,6 @@ class JamaahTableSeeder extends Seeder
     {
         $users = User::whereIn('id', [2, 3, 4, 5, 6, 7])->get();
         $profileMasjids = ProfileMasjid::whereIn('id', [1, 2, 3, 4, 5, 6])->get();
-        $activities = AktivitasJamaah::all();
 
         // Data 35 nama unik untuk jamaah
         $namaJamaah = [
@@ -59,6 +58,15 @@ class JamaahTableSeeder extends Seeder
             'Yoga Pratama'
         ];
 
+        $aktivitasJamaah = [
+            'Sholat Jumat',
+            'TPQ',
+            'Pengajian Rutin',
+            'Kegiatan Sosial',
+            'Kegiatan Keagamaan',
+            'Relawan Masjid'
+        ];
+
         // Looping untuk setiap user dan masjid
         foreach ($users as $user) {
             $profileMasjid = $profileMasjids->firstWhere('user_id', $user->id);
@@ -77,20 +85,18 @@ class JamaahTableSeeder extends Seeder
                 $umur = rand(15, 60);
 
                 // Ambil aktivitas jamaah secara acak
-                $randomActivity = $activities->random();
 
                 Jamaah::create([
-                    'user_id' => $user->id,
                     'profile_masjid_id' => $profileMasjid->id,
                     'nama' => $nama,
                     'slug' => Str::slug($nama) . '-' . Str::random(5),
-
                     'no_handphone' => '081' . rand(100000000, 999999999),
                     'alamat' => 'Jl. ' . $nama . ' No. ' . rand(1, 100) . ', Yogyakarta',
                     'umur' => $umur,
                     'jenis_kelamin' => $gender,
-                    'aktivitas_jamaah_id' => $randomActivity->id,
-                    'category_id' => 2,
+                    'aktivitas_jamaah' => $aktivitasJamaah[array_rand($aktivitasJamaah)],
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id,
                 ]);
             }
         }

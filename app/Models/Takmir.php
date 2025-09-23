@@ -20,7 +20,6 @@ class Takmir extends Model
         'profile_masjid_id', // Pastikan ini ada
         'nama',
         'no_handphone',
-        'category_id',
         'umur',
         'jabatan',
         'deskripsi_tugas',
@@ -39,13 +38,18 @@ class Takmir extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
+
 
     public function profileMasjid(): BelongsTo
     {
         return $this->belongsTo(ProfileMasjid::class);
+    }
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

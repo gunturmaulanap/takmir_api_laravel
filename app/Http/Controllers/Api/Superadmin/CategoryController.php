@@ -66,7 +66,9 @@ class CategoryController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:categories',
+            'name' => 'required|string|max:255',
+            'color' => 'nullable|string|max:50',
+            'profile_masjid_id' => 'nullable|exists:profile_masjids,id',
         ]);
 
         if ($validator->fails()) {
@@ -80,20 +82,40 @@ class CategoryController extends Controller implements HasMiddleware
         try {
             $user = Auth::user();
 
-            // HAPUS pengecekan profileMasjid untuk superadmin
-            // if (!$user || !$user->profileMasjid) {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'User tidak terautentikasi atau tidak memiliki profil masjid.'
-            //     ], 403);
-            // }
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User tidak terautentikasi.'
+                ], 403);
+            }
 
-            //create category GLOBAL (tanpa profile_masjid_id)
+            // Validasi color jika ada
+            $color = $request->color ?? 'Blue';
+
+            // Untuk superadmin, jika tidak ada profile_masjid_id, gunakan ID 1 sebagai default
+            // atau ambil profile masjid pertama yang tersedia
+            $profileMasjidId = $request->profile_masjid_id;
+
+            if (!$profileMasjidId) {
+                // Ambil profile masjid pertama sebagai default untuk kategori global
+                $firstProfile = \App\Models\ProfileMasjid::first();
+                if (!$firstProfile) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Tidak ada profile masjid tersedia.'
+                    ], 400);
+                }
+                $profileMasjidId = $firstProfile->id;
+            }
+
+            //create category dengan audit columns dan profile_masjid_id
             $category = Category::create([
                 'name' => $request->name,
                 'slug' => Str::slug($request->name, '-'),
-                'user_id' => $user->id,
-                // HAPUS: 'profile_masjid_id' => $user->profileMasjid->id,
+                'color' => $color,
+                'profile_masjid_id' => $profileMasjidId,
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
             ]);
 
             if ($category) {
@@ -141,7 +163,9 @@ class CategoryController extends Controller implements HasMiddleware
     public function update(Request $request, Category $category)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:categories,name,' . $category->id,
+            'name' => 'required|string|max:255',
+            'color' => 'nullable|string|max:50',
+            'profile_masjid_id' => 'nullable|exists:profile_masjids,id',
         ]);
 
         if ($validator->fails()) {
@@ -153,9 +177,21 @@ class CategoryController extends Controller implements HasMiddleware
         }
 
         try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User tidak terautentikasi.'
+                ], 403);
+            }
+
             $category->update([
                 'name' => $request->name,
                 'slug' => Str::slug($request->name, '-'),
+                'color' => $request->color ?? $category->color,
+                'profile_masjid_id' => $request->profile_masjid_id ?? $category->profile_masjid_id,
+                'updated_by' => $user->id,
             ]);
 
             if ($category) {
@@ -187,6 +223,29 @@ class CategoryController extends Controller implements HasMiddleware
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat menghapus data kategori.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get all categories for dropdown/select options
+     */
+    public function all()
+    {
+        try {
+            //get all categories GLOBAL (tanpa scope masjid untuk superadmin)
+            $categories = Category::select('id', 'name', 'color')->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'List semua kategori berhasil dimuat.',
+                'data' => $categories
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil semua kategori.',
                 'error' => $e->getMessage()
             ], 500);
         }

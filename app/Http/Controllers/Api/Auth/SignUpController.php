@@ -26,6 +26,7 @@ class SignUpController extends Controller
         // Set validation rules for user and masjid profile data, termasuk validasi image
         $validator = Validator::make($request->all(), [
             'name'          => 'required|string|max:255',
+            'username'      => 'required|string|max:255|unique:users,username',
             'email'         => 'required|email|unique:users,email',
             'password'      => 'required|string|min:8|confirmed',
             'nama_masjid'   => 'required|string|max:255',
@@ -62,20 +63,22 @@ class SignUpController extends Controller
 
             // Create the user with the provided data
             $user = User::create([
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'password'  => Hash::make($request->password),
+                'name'     => $request->name,
+                'username' => $request->username,
+                'email'    => $request->email,
+                'password' => Hash::make($request->password),
             ]);
 
             // Assign the 'admin' role to the new user
             $user->assignRole($adminRole);
 
-            // Create the ProfileMasjid entry linked to the new user
+            // Create the ProfileMasjid entry linked to the new user dengan slug
             ProfileMasjid::create([
                 'user_id' => $user->id,
                 'nama'    => $request->nama_masjid,
                 'alamat'  => $request->alamat_masjid,
-                'image'   => $imageName, // Simpan nama file image
+                'slug'    => \Illuminate\Support\Str::slug($request->nama_masjid),
+                'image'   => $imageName,
             ]);
 
             DB::commit();
@@ -87,8 +90,8 @@ class SignUpController extends Controller
             return response()->json([
                 'success'       => true,
                 'message'       => 'Registrasi admin dan profil masjid berhasil!',
-                'user'          => $user->only(['name', 'email']),
-                'profile'       => ProfileMasjid::where('user_id', $user->id)->first(), // Ambil data profil untuk respons
+                'user'          => $user->only(['name', 'username', 'email']),
+                'profile'       => ProfileMasjid::where('user_id', $user->id)->first(),
                 'permissions'   => $user->getPermissionArray(),
                 'token'         => $token
             ], 201);

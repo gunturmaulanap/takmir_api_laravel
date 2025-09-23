@@ -11,31 +11,29 @@ class Jamaah extends Model
 {
     use HasMasjid;
     protected $fillable = [
-        'user_id',
         'profile_masjid_id',
         'nama',
         'no_handphone',
-        'category_id',
         'alamat',
         'umur',
         'slug',
         'jenis_kelamin',
-        'aktivitas_jamaah_id',
+        'aktivitas_jamaah',
+        'created_by',
+        'updated_by',
     ];
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+
     public function profileMasjid()
     {
         return $this->belongsTo(ProfileMasjid::class);
     }
-    public function aktivitasJamaah()
+
+    public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(AktivitasJamaah::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
-    public function category()
+    public function updatedBy(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

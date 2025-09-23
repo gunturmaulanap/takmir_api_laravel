@@ -258,5 +258,39 @@ class PermissionsTableSeeder extends Seeder
             'name' => 'asatidzs.delete',
             'guard_name' => 'api'
         ]);
+        //permission for transaksi keuangan
+        Permission::create([
+            'name' => 'transaksi-keuangan.index',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'transaksi-keuangan.create',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'transaksi-keuangan.edit',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'transaksi-keuangan.delete',
+            'guard_name' => 'api'
+        ]);
+        //permission for jadwal khutbah
+        Permission::create([
+            'name' => 'jadwal-khutbah.index',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'jadwal-khutbah.create',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'jadwal-khutbah.edit',
+            'guard_name' => 'api'
+        ]);
+        Permission::create([
+            'name' => 'jadwal-khutbah.delete',
+            'guard_name' => 'api'
+        ]);
     }
 }

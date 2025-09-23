@@ -16,9 +16,8 @@ class UpdateJamaahRequest extends FormRequest
         /** @var User|Authenticatable|null $user */
         $user = auth()->guard('api')->user();
 
-        // Pastikan user terautentikasi dan benar-benar memiliki profil masjid.
-        // Method getMasjidProfile() harus ada di dalam model User Anda.
-        return $user && method_exists($user, 'getMasjidProfile') && $user->getMasjidProfile();
+        // User harus terautentikasi
+        return $user !== null;
     }
 
     /**
@@ -30,26 +29,40 @@ class UpdateJamaahRequest extends FormRequest
     {
         $jamaahId = $this->route('jamaah');
 
-        /** @var User $user */
-        $user = auth()->guard('api')->user();
-
-        // Aman diakses karena sudah divalidasi di dalam method authorize()
-        $masjidProfileId = $user->getMasjidProfile()->id;
-
         return [
-            'nama'               => [
+            'nama' => [
                 'required',
                 'string',
                 'max:255',
-                // Pastikan nama unik untuk masjid ini, kecuali untuk data jamaah yang sedang diupdate
-                'unique:jamaahs,nama,' . $jamaahId . ',id,profile_masjid_id,' . $masjidProfileId,
             ],
-            'no_handphone'       => 'required|string|max:15',
-            'alamat'             => 'required|string',
-            'umur'               => 'required|integer|min:1',
-            'jenis_kelamin'      => 'required|in:Laki-laki,Perempuan',
-            'aktivitas_jamaah_id' => 'required|exists:aktivitas_jamaahs,id',
-            'category_id'        => 'required|exists:categories,id',
+            'no_handphone' => 'required|string|max:15',
+            'alamat' => 'required|string',
+            'umur' => 'required|integer|min:1|max:150',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'aktivitas_jamaah' => 'nullable|string|max:255',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return [
+            'nama.required' => 'Nama jamaah wajib diisi.',
+            'nama.max' => 'Nama jamaah maksimal 255 karakter.',
+            'no_handphone.required' => 'Nomor handphone wajib diisi.',
+            'no_handphone.max' => 'Nomor handphone maksimal 15 karakter.',
+            'alamat.required' => 'Alamat wajib diisi.',
+            'umur.required' => 'Umur wajib diisi.',
+            'umur.integer' => 'Umur harus berupa angka.',
+            'umur.min' => 'Umur minimal 1 tahun.',
+            'umur.max' => 'Umur maksimal 150 tahun.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib diisi.',
+            'jenis_kelamin.in' => 'Jenis kelamin harus Laki-laki atau Perempuan.',
+            'aktivitas_jamaah.max' => 'Aktivitas jamaah maksimal 255 karakter.',
         ];
     }
 }

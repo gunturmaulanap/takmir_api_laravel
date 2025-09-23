@@ -39,12 +39,29 @@ class KhatibController extends Controller implements HasMiddleware
     {
         $validated = $request->validated();
         $user = $request->user();
-        $masjidProfile = $user->getMasjidProfile();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak terautentikasi.'
+            ], 403);
+        }
+
+        // Untuk admin, ambil profile_masjid_id dari user, untuk superadmin dari request
+        $profileMasjidId = $validated['profile_masjid_id'] ?? ($user->profileMasjid ? $user->profileMasjid->id : null);
+
+        if (!$profileMasjidId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Profile masjid tidak ditemukan.'
+            ], 400);
+        }
 
         $khatib = Khatib::create(array_merge($validated, [
-            'user_id'           => $user->id,
-            'profile_masjid_id' => $masjidProfile->id,
+            'profile_masjid_id' => $profileMasjidId,
             'slug' => Str::slug($validated['nama'] . '-' . $validated['tanggal_khutbah']),
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
         ]));
 
         return new KhatibResource(true, 'Data khatib berhasil disimpan.', $khatib);
@@ -64,12 +81,21 @@ class KhatibController extends Controller implements HasMiddleware
     public function update(UpdateKhatibRequest $request, Khatib $khatib)
     {
         $validated = $request->validated();
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak terautentikasi.'
+            ], 403);
+        }
 
         $updateData = $validated;
         // Buat slug baru jika nama diubah
         if (isset($validated['nama'])) {
             $updateData['slug'] = Str::slug($validated['nama'] . '-' . $validated['tanggal_khutbah']);
         }
+        $updateData['updated_by'] = $user->id;
 
         $khatib->update($updateData);
 

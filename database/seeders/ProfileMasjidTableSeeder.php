@@ -18,37 +18,37 @@ class ProfileMasjidTableSeeder extends Seeder
             [
                 'name' => 'Masjid Nurul Ashri',
                 'alamat' => 'Jalan Deresan III, Gejayan, Sleman',
-                'user_email' => 'suyitno@gmail.com',
+                'username' => 'suyitno',
             ],
             [
                 'name' => 'Masjid Kampus UGM',
                 'alamat' => 'Jalan Lingkar Utara, Bulaksumur, Sleman',
-                'user_email' => 'dwi-aryo@gmail.com',
+                'username' => 'dwiaryo',
             ],
             [
                 'name' => 'Masjid Gedhe Kauman',
                 'alamat' => 'Jalan Alun-Alun Utara, Kota Yogyakarta',
-                'user_email' => 'putri-dian@gmail.com',
+                'username' => 'dimas',
             ],
             [
                 'name' => 'Masjid Jogokariyan',
                 'alamat' => 'Jalan Jogokariyan, Mantrijeron, Kota Yogyakarta',
-                'user_email' => 'anisa-ratna@gmail.com',
+                'username' => 'ponco',
             ],
             [
                 'name' => 'Masjid Syuhada',
                 'alamat' => 'Jalan I Dewa Nyoman Oka, Kotabaru, Kota Yogyakarta',
-                'user_email' => 'joko-susilo@gmail.com',
+                'username' => 'joko',
             ],
             [
                 'name' => 'Masjid Al-Falah',
                 'alamat' => 'Jalan Cempaka, Condongcatur, Sleman',
-                'user_email' => 'wahyu-aji@gmail.com',
+                'username' => 'prabu',
             ]
         ];
 
         foreach ($masjids as $masjid) {
-            $user = User::where('email', $masjid['user_email'])->first();
+            $user = User::where('username', $masjid['username'])->first();
             if ($user) {
                 ProfileMasjid::firstOrCreate(
                     ['user_id' => $user->id],
@@ -56,6 +56,7 @@ class ProfileMasjidTableSeeder extends Seeder
                         'nama' => $masjid['name'],
                         'alamat' => $masjid['alamat'],
                         'image' => null,
+                        'slug' => Str::slug($masjid['name'])
                     ]
                 );
             }

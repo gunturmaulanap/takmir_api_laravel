@@ -3,33 +3,70 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\HasMasjid; // Import trait
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Tambahkan ini
-
-
+use App\Models\Traits\HasMasjid;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EventView extends Model
 {
     use HasMasjid;
+
     protected $fillable = [
-        'category_id',
         'profile_masjid_id',
-        'user_id',
         'event_id',
-        'khatib_id',
-        'tanggal_event',
-        'aktivitas_jamaah',
+        'jadwal_khutbah_id',
+        'title',
+        'tanggal',
+        'waktu',
+        'type',
+        'description',
+        'created_by',
+        'updated_by',
     ];
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-    public function profileMasjid()
+
+    protected $casts = [
+        'tanggal' => 'date',
+        'waktu' => 'datetime:H:i',
+    ];
+
+    public function profileMasjid(): BelongsTo
     {
         return $this->belongsTo(ProfileMasjid::class);
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function jadwalKhutbah(): BelongsTo
+    {
+        return $this->belongsTo(JadwalKhutbah::class);
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Scope untuk filter berdasarkan bulan dan tahun
+     */
+    public function scopeByMonth($query, $year, $month)
+    {
+        return $query->whereYear('tanggal', $year)
+            ->whereMonth('tanggal', $month);
+    }
+
+    /**
+     * Scope untuk filter berdasarkan tipe
+     */
+    public function scopeByType($query, $type)
+    {
+        return $query->where('type', $type);
     }
 }

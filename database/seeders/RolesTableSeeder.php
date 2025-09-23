@@ -32,6 +32,17 @@ class RolesTableSeeder extends Seeder
         // Menetapkan permissions untuk role 'admin'
         $adminRole->givePermissionTo([
             "categories.index",
+            "categories.create",
+            "categories.edit",
+            "categories.delete",
+            "transaksi-keuangan.index",
+            "transaksi-keuangan.create",
+            "transaksi-keuangan.edit",
+            "transaksi-keuangan.delete",
+            "jadwal-khutbah.index",
+            "jadwal-khutbah.create",
+            "jadwal-khutbah.edit",
+            "jadwal-khutbah.delete",
             "takmirs.index",
             "takmirs.create",
             "takmirs.edit",
@@ -68,7 +79,6 @@ class RolesTableSeeder extends Seeder
             "aktivitas_jamaahs.create",
             "aktivitas_jamaahs.edit",
             "aktivitas_jamaahs.delete",
-            "moduls.index"
         ]);
 
         // Membuat role 'takmir'
@@ -79,15 +89,12 @@ class RolesTableSeeder extends Seeder
 
         // Menetapkan permissions untuk role 'takmir'
         $takmirRole->givePermissionTo([
-            "aktivitas_jamaahs.index",
-            "aktivitas_jamaahs.create",
-            "aktivitas_jamaahs.edit",
-            "aktivitas_jamaahs.delete",
             "categories.index",
-            "takmirs.index",
-            "takmirs.create",
-            "takmirs.edit",
-            "takmirs.delete",
+            "transaksi-keuangan.index",
+            "jadwal-khutbah.index",
+            "jadwal-khutbah.create",
+            "jadwal-khutbah.edit",
+            "jadwal-khutbah.delete",
             "imams.index",
             "imams.create",
             "imams.edit",

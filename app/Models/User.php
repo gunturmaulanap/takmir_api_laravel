@@ -19,6 +19,7 @@ class User extends Authenticatable implements JWTSubject
 
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
     ];
@@ -78,51 +79,14 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getMasjidProfile()
     {
-        if ($this->hasRole('admin')) {
+        if ($this->roles->contains('name', 'admin')) {
             return $this->profileMasjid;
         }
 
-        if ($this->hasRole('takmir')) {
+        if ($this->roles->contains('name', 'takmir')) {
             return $this->takmirProfileMasjid;
         }
 
         return null;
-    }
-
-    public function imams(): HasMany
-    {
-        return $this->hasMany(Imam::class);
-    }
-
-    public function asatidzs(): HasMany
-    {
-        return $this->hasMany(Asatidz::class);
-    }
-
-    public function khatibs(): HasMany
-    {
-        return $this->hasMany(Khatib::class);
-    }
-
-    public function events(): HasMany
-    {
-        return $this->hasMany(Event::class);
-    }
-
-    public function eventViews(): HasMany
-    {
-        return $this->hasMany(EventView::class);
-    }
-
-
-
-    public function jamaahs(): HasMany
-    {
-        return $this->hasMany(Jamaah::class);
-    }
-
-    public function categories(): HasMany
-    {
-        return $this->hasMany(Category::class);
     }
 }

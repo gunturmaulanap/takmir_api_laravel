@@ -16,8 +16,8 @@ class StoreKhatibRequest extends FormRequest
         /** @var User|Authenticatable|null $user */
         $user = auth()->guard('api')->user();
 
-        // Pastikan user terautentikasi dan memiliki profil masjid.
-        return $user && method_exists($user, 'getMasjidProfile') && $user->getMasjidProfile();
+        // User harus terautentikasi
+        return $user !== null;
     }
 
     /**
@@ -33,6 +33,7 @@ class StoreKhatibRequest extends FormRequest
             'alamat'          => 'nullable|string',
             'tanggal_khutbah' => 'required|date|after_or_equal:today', // Pastikan tanggal valid
             'judul_khutbah'   => 'required|string|max:255',
+            'profile_masjid_id' => 'nullable|exists:profile_masjids,id', // Untuk superadmin
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,32 +15,33 @@ class LoginController extends Controller
      */
     public function index(Request $request)
     {
-        // Set validasi
+        // Validasi hanya butuh login (username/email) dan password
         $validator = Validator::make($request->all(), [
-            'email'    => 'required|email',
+            'id'       => 'required|string',
             'password' => 'required',
         ]);
 
-        // Response error validasi
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        // Ambil "email" dan "password" dari input
-        $credentials = $request->only('email', 'password');
+        // Deteksi login pakai email atau username
+        $loginField = filter_var($request->id, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $credentials = [
+            $loginField => $request->id,
+            'password' => $request->password
+        ];
 
-        // Check jika "email" dan "password" tidak sesuai
         if (!$token = auth()->guard('api')->attempt($credentials)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email atau Kata Sandi salah'
+                'message' => 'Username/Email atau Kata Sandi salah'
             ], 400);
         }
 
         try {
-            // Ambil user yang terautentikasi
+            /** @var User $user */
             $user = auth()->guard('api')->user();
-
             if (!$user) {
                 return response()->json([
                     'success' => false,
@@ -47,31 +49,28 @@ class LoginController extends Controller
                 ], 404);
             }
 
-            // Panggil metode getMasjidProfile() yang sudah ada di model User Anda
-            $masjidProfile = $user->getMasjidProfile();
+            // Ambil role utama user (tanpa input dari request)
+            $role = $user->roles->isNotEmpty() ? $user->roles->first()->name : 'user';
 
-            // Ambil data user
             $userData = [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-                'role'  => $user->roles->isNotEmpty() ? $user->roles->first()->name : 'user'
+                'id'       => $user->id,
+                'name'     => $user->name,
+                'username' => $user->username,
+                'email'    => $user->email,
+                'role'     => $role
             ];
 
-            // Ambil semua permissions
+            $masjidProfile = $user->getMasjidProfile();
             $permissions = $user->getAllPermissions()->pluck('name')->toArray();
 
-            // Berikan respons yang sukses
             return response()->json([
                 'success'        => true,
                 'user'           => $userData,
-                'profile_masjid' => $masjidProfile, // Gunakan hasil dari getMasjidProfile()
+                'profile_masjid' => $masjidProfile,
                 'permissions'    => $permissions,
                 'token'          => $token
             ], 200);
-
         } catch (\Exception $e) {
-            // Tangani error umum
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil data user',

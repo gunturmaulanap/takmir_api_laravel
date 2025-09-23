@@ -13,14 +13,21 @@ class Event extends Model
     protected $fillable = [
         'category_id',
         'profile_masjid_id',
-        'user_id',
         'nama',
         'slug',
         'tanggal_event',
         'waktu_event',
+        'tempat_event',
         'deskripsi',
         'image',
+        'created_by',
+        'updated_by',
     ];
+
+    protected $casts = [
+        'tanggal_event' => 'date',
+    ];
+
     protected function image(): Attribute
     {
         return Attribute::make(
@@ -32,12 +39,17 @@ class Event extends Model
     {
         return $this->belongsTo(Category::class);
     }
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+
     public function profileMasjid()
     {
         return $this->belongsTo(ProfileMasjid::class);
+    }
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

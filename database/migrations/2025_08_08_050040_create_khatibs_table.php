@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('aparaturs', function (Blueprint $table) {
+        Schema::create('khatibs', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('role');
-            $table->string('image')->nullable();
             $table->foreignId('profile_masjid_id')->constrained('profile_masjids')->cascadeOnDelete();
+            $table->string('nama');
+            $table->string('slug');
+            $table->unique(['slug', 'profile_masjid_id']);
+            $table->string('no_handphone');
+            $table->text('alamat');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('aparaturs');
+        Schema::dropIfExists('khatibs');
     }
 };

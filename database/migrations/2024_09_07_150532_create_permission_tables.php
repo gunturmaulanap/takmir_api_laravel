@@ -4,6 +4,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -119,6 +120,38 @@ return new class extends Migration
 
             $table->primary([$pivotPermission, $pivotRole], 'role_has_permissions_permission_id_role_id_primary');
         });
+
+        // TRIGGER: Sinkronisasi users.role_id dengan model_has_roles (hanya untuk MySQL/MariaDB)
+        DB::unprepared('
+            CREATE TRIGGER trg_user_role_id_after_insert
+            AFTER INSERT ON model_has_roles
+            FOR EACH ROW
+            BEGIN
+                IF NEW.model_type = "App\\\\Models\\\\User" THEN
+                    UPDATE users SET role_id = NEW.role_id WHERE id = NEW.model_id;
+                END IF;
+            END;
+        ');
+        DB::unprepared('
+            CREATE TRIGGER trg_user_role_id_after_delete
+            AFTER DELETE ON model_has_roles
+            FOR EACH ROW
+            BEGIN
+                IF OLD.model_type = "App\\\\Models\\\\User" THEN
+                    UPDATE users SET role_id = NULL WHERE id = OLD.model_id;
+                END IF;
+            END;
+        ');
+        DB::unprepared('
+            CREATE TRIGGER trg_user_role_id_after_update
+            AFTER UPDATE ON model_has_roles
+            FOR EACH ROW
+            BEGIN
+                IF NEW.model_type = "App\\\\Models\\\\User" THEN
+                    UPDATE users SET role_id = NEW.role_id WHERE id = NEW.model_id;
+                END IF;
+            END;
+        ');
 
         app('cache')
             ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)

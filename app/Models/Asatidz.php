@@ -17,13 +17,13 @@ class Asatidz extends Model
     protected $fillable = [
         'nama',
         'profile_masjid_id',
-        'user_id',
         'no_handphone',
-        'category_id',
         'alamat',
         'tugas',
         'jenis_kelamin',
         'image',
+        'created_by',
+        'updated_by',
     ];
     protected function image(): Attribute
     {
@@ -31,16 +31,18 @@ class Asatidz extends Model
             get: fn($image) => url('/storage/photos/' . $image),
         );
     }
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+
     public function profileMasjid()
     {
         return $this->belongsTo(ProfileMasjid::class);
     }
-    public function category()
+
+    public function createdBy(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    public function updatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

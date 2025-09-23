@@ -8,27 +8,45 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class JamaahResource extends JsonResource
 {
     /**
+     * Indicates if the resource's collection keys should be preserved.
+     *
      * @var bool
      */
-    public $status;
-    /**
-     * @var string
-     */
-    public $message;
+    public $preserveKeys = true;
 
     /**
-     * __construct
+     * The "data" wrapper that should be applied.
      *
-     * @param  bool  $status
-     * @param  string  $message
+     * @var string|null
+     */
+    public static $wrap = 'data';
+
+    /**
+     * Create a new resource instance.
+     *
      * @param  mixed  $resource
      * @return void
      */
-    public function __construct($status, $message, $resource)
+    public function __construct($resource)
     {
         parent::__construct($resource);
-        $this->status  = $status;
-        $this->message = $message;
+    }
+
+    /**
+     * Create a custom response with additional data.
+     *
+     * @param  bool  $success
+     * @param  string  $message
+     * @param  mixed  $resource
+     * @return array
+     */
+    public static function customResponse($success, $message, $resource)
+    {
+        return [
+            'success' => $success,
+            'message' => $message,
+            'data' => $resource
+        ];
     }
 
     /**
@@ -40,9 +58,28 @@ class JamaahResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'success'   => $this->status,
-            'message'   => $this->message,
-            'data'      => $this->resource
+            'id' => $this->id,
+            'profile_masjid' => [
+                'id' => $this->profileMasjid?->id,
+                'nama' => $this->profileMasjid?->nama,
+            ],
+            'slug' => $this->slug,
+            'nama' => $this->nama,
+            'no_handphone' => $this->no_handphone,
+            'alamat' => $this->alamat,
+            'umur' => $this->umur,
+            'jenis_kelamin' => $this->jenis_kelamin,
+            'aktivitas_jamaah' => $this->aktivitas_jamaah,
+            'created_by' => [
+                'id' => $this->createdBy?->id,
+                'name' => $this->createdBy?->name,
+            ],
+            'updated_by' => [
+                'id' => $this->updatedBy?->id,
+                'name' => $this->updatedBy?->name,
+            ],
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }
