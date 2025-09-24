@@ -4,6 +4,7 @@ NIXPACKS_PHP_ROOT_DIR = "/app"
 
 [phases.setup]
 nixPkgs = ["php82", "composer", "nodejs_18"]
+aptPkgs = ["default-mysql-client"]
 
 [phases.install]
 cmds = [
@@ -13,8 +14,14 @@ cmds = [
 [phases.build]
 cmds = [
     "php artisan config:cache",
-    "php artisan route:cache",
+    "php artisan route:cache", 
     "php artisan view:cache"
+]
+
+[phases.deploy]
+cmds = [
+    "php artisan migrate --force",
+    "php artisan storage:link --force"
 ]
 
 [start]

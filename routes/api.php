@@ -19,6 +19,16 @@ use App\Http\Controllers\Api\Admin\MuadzinController;
 use App\Http\Controllers\Api\Admin\JadwalKhutbahController;
 use App\Http\Controllers\Api\Admin\TransaksiKeuanganController;
 
+// Test endpoint (no auth required)
+Route::get('/test', function () {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'API is working!',
+        'timestamp' => now(),
+        'cors_enabled' => true
+    ]);
+});
+
 // Route untuk sign up (register)
 Route::post('/signup', [SignUpController::class, '__invoke']);
 
