@@ -37,7 +37,13 @@ Route::group(['middleware' => 'auth:api'], function () {
 
         // Categories API - specific routes HARUS sebelum apiResource
         Route::get('/categories/all', [AdminCategoryController::class, 'all']);
-        Route::apiResource('/categories', AdminCategoryController::class);
+        Route::apiResource('/categories', AdminCategoryController::class)->names([
+            'index' => 'admin.categories.index',
+            'store' => 'admin.categories.store',
+            'show' => 'admin.categories.show',
+            'update' => 'admin.categories.update',
+            'destroy' => 'admin.categories.destroy',
+        ]);
 
         // Transaksi Keuangan API - specific routes HARUS sebelum apiResource
         Route::get('/transactions/dashboard', [TransaksiKeuanganController::class, 'dashboard']);
@@ -99,7 +105,13 @@ Route::prefix('superadmin')->group(function () {
 
         //categories - specific routes HARUS sebelum apiResource
         Route::get('/categories/all', [App\Http\Controllers\Api\Superadmin\CategoryController::class, 'all']);
-        Route::apiResource('/categories', SuperadminCategoryController::class);
+        Route::apiResource('/categories', SuperadminCategoryController::class)->names([
+            'index' => 'superadmin.categories.index',
+            'store' => 'superadmin.categories.store',
+            'show' => 'superadmin.categories.show',
+            'update' => 'superadmin.categories.update',
+            'destroy' => 'superadmin.categories.destroy',
+        ]);
         //users
         Route::apiResource('/users', UserController::class);
         Route::put('/users/{id}/toggle-active', [UserController::class, 'toggleActive'])
