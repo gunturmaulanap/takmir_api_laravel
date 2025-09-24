@@ -1,0 +1,19 @@
+# TAMBAHAN Environment Variables yang mungkin missing
+# Copy ini ke Railway Variables juga
+
+# Session & Cache
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+
+# Filesystem
+FILESYSTEM_DISK=local
+
+# Mail (untuk reset password, dll)
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS="noreply@takmir.app"
+MAIL_FROM_NAME="Takmir API"
+
+# Broadcasting  
+BROADCAST_CONNECTION=log
