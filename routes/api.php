@@ -54,9 +54,6 @@ Route::group(['middleware' => 'auth:api'], function () {
         // Takmir API
         Route::apiResource('/takmirs', TakmirController::class);
 
-        // Jadwal Khatib API
-        Route::apiResource('/jadwal-khutbah', JadwalKhutbahController::class);
-
         // Jamaah API
         Route::apiResource('/jamaahs', JamaahController::class);
 
