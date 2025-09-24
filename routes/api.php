@@ -18,7 +18,6 @@ use App\Http\Controllers\Api\Admin\ImamController;
 use App\Http\Controllers\Api\Admin\MuadzinController;
 use App\Http\Controllers\Api\Admin\JadwalKhutbahController;
 use App\Http\Controllers\Api\Admin\TransaksiKeuanganController;
-use App\Models\JadwalKhutbah;
 
 // Route untuk sign up (register)
 Route::post('/signup', [SignUpController::class, '__invoke']);
