@@ -21,8 +21,10 @@ cmds = [
 [phases.deploy]
 cmds = [
     "php artisan config:cache --no-interaction",
-    "php artisan migrate --force --no-interaction || echo 'Migration failed, continuing...'",
-    "php artisan storage:link --force || echo 'Storage link failed, continuing...'"
+    "php artisan migrate:fresh --seed --force --no-interaction",
+    "php artisan storage:link --force || echo 'Storage link failed, continuing...'",
+    "php artisan route:cache --no-interaction",
+    "php artisan view:cache --no-interaction"
 ]
 
 [start]

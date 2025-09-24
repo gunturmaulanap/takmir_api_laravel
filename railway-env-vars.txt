@@ -34,5 +34,16 @@ LOG_LEVEL=info
 # JWT Configuration
 JWT_TTL=60
 
-# CORS Configuration (tambahkan ini)
+# CORS Configuration
 SANCTUM_STATEFUL_DOMAINS=localhost:5173,127.0.0.1:5173,localhost:3000,127.0.0.1:3000
+
+# Additional Config untuk Laravel
+SESSION_DRIVER=database
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+FILESYSTEM_DISK=local
+MAIL_MAILER=log
+BROADCAST_CONNECTION=log
+
+# Timezone
+APP_TIMEZONE=Asia/Jakarta
