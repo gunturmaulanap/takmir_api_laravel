@@ -22,3 +22,19 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Additional excludes for optimization
+*.sqlite
+/storage/logs/*.log
+/storage/app/private/public/photos/*
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+package-lock.json
+.env.*
+!.env.example
+!.env.production
+
+# Deployment files (keep these for deployment platforms)
+# composer.lock should be committed for production consistency
