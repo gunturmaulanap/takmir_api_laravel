@@ -21,15 +21,16 @@ class UserFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'username' => fake()->unique()->userName(), // Menambahkan username
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->name(),
+            'username' => $this->faker->unique()->userName(),
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'profile_masjid_id' => null, // Default masjid ID null untuk superadmin
+            'profile_masjid_id' => null,
             'remember_token' => Str::random(10),
         ];
     }
